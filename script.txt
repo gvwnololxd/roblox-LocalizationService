@@ -1,0 +1,26 @@
+-- MAKE THIS A SCRIPT AND PUT IT IN ServerScriptService
+
+local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
+local LocalizationService = game:GetService("LocalizationService")
+local Webhook = "paste ur webhook here"
+
+local function SendMessage(player)
+	local success, countryRegion = pcall(LocalizationService.GetCountryRegionForPlayerAsync, LocalizationService, player)
+	if success then
+		local content = "||".. player.Name .."||" .. " is located in " .. countryRegion 
+		local payload = HttpService:JSONEncode({ content = content })
+		HttpService:PostAsync(Webhook, payload)
+	else
+		warn("Failed to get country region for player " .. player.Name)
+	end
+end
+
+local function SendAllPlayersInfo()
+	for _, player in ipairs(Players:GetPlayers()) do
+		SendMessage(player)
+	end
+end
+
+SendAllPlayersInfo()
+Players.PlayerAdded:Connect(SendAllPlayersInfo)
